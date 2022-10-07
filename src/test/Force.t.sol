@@ -1,0 +1,50 @@
+pragma solidity ^0.8.10;
+
+import "ds-test/test.sol";
+
+import "../Force/ForceFactory.sol";
+import "../Ethernaut.sol";
+import "./utils/vm.sol";
+import "../Force/ForceHack.sol";
+
+contract ForceTest is DSTest {
+    Vm vm = Vm(address(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D));
+    Ethernaut ethernaut;
+    address eoaAddress = address(100);
+
+    function setUp() public {
+        // Setup instance of the Ethernaut contract
+        ethernaut = new Ethernaut();
+        // Deal EOA address some ether
+        vm.deal(eoaAddress, 5 ether);
+    }
+
+    function testForceHack() public {
+        /////////////////
+        // LEVEL SETUP //
+        /////////////////
+
+        ForceFactory forceFactory = new ForceFactory();
+        ethernaut.registerLevel(forceFactory);
+        vm.startPrank(eoaAddress);
+        address levelAddress = ethernaut.createLevelInstance(forceFactory);
+        Force ethernautForce = Force(payable(levelAddress));
+
+        //////////////////
+        // LEVEL ATTACK //
+        //////////////////
+
+        emit log_named_uint("address", address(this).balance);
+
+        ForceHack f = new ForceHack{value: 4}(address(ethernautForce));
+        f.boom();
+
+        //////////////////////
+        // LEVEL SUBMISSION //
+        //////////////////////
+
+        bool levelSuccessfullyPassed = ethernaut.submitLevelInstance(payable(levelAddress));
+        vm.stopPrank();
+        assert(levelSuccessfullyPassed);
+    }
+}
