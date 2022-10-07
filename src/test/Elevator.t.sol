@@ -4,6 +4,7 @@ import "ds-test/test.sol";
 
 import "../Elevator/ElevatorFactory.sol";
 import "../Ethernaut.sol";
+import "../Elevator/ElevatorHack.sol";
 
 contract ElevatorTest is DSTest {
     Ethernaut ethernaut;
@@ -27,13 +28,14 @@ contract ElevatorTest is DSTest {
         // LEVEL ATTACK //
         //////////////////
 
+        ElevatorHack hack = new ElevatorHack();
+        hack.boom(address(ethernautElevator));
+
         //////////////////////
         // LEVEL SUBMISSION //
         //////////////////////
 
-        bool levelSuccessfullyPassed = ethernaut.submitLevelInstance(
-            payable(levelAddress)
-        );
+        bool levelSuccessfullyPassed = ethernaut.submitLevelInstance(payable(levelAddress));
         assert(levelSuccessfullyPassed);
     }
 }

